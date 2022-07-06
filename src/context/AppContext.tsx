@@ -4,14 +4,20 @@ import { url } from "../constant/url";
 
 interface IAppState {
   socket: Socket;
+  userName: string;
+  onlineCount: number;
+  roomId: number | null;
 }
 
 export type IAction = {
-  type: String;
+  type: string;
 };
 
 const initialState: IAppState = {
   socket: io(url),
+  userName: "",
+  onlineCount: 0,
+  roomId: null,
 };
 
 interface IAppContext {

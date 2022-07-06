@@ -1,0 +1,48 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapper .game-container {
+  width: 70%;
+  height: 85%;
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 800px;
+  grid-template-rows: 400px 1fr;
+  grid-gap: 10px;
+}
+
+.game-container>div {
+  background-color: white;
+  border-radius: 5px;
+}
+
+.game-container .user-list-container {
+  grid-row: 1 / 3;
+  
+}
+
+.game-container .input-area {
+  padding: 10px 10px 20px 10px;
+
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: 1fr 40px 1fr 140px;
+}
+
+.game-container .input-area .divider{
+  margin-left: 20px;
+  margin-bottom: -20px;
+  border-left: 2px solid rgb(238, 230, 230);
+  height: 100%;
+}
+
+.game-container .input-area .button-area {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: url('../public/app-background.jpg') fixed no-repeat;
+  background-size: cover; 
 }
 
 code {
@@ -14,11 +16,10 @@ code {
 
 html {
   box-sizing: border-box;
-  background: url('../public/app-background.jpg') fixed no-repeat;
-  background-size: cover; 
 }
 *,
 *::before,
 *::after {
   box-sizing: inherit;
+  list-style-type: inherit;
 }
