@@ -3,6 +3,7 @@ import { Button} from "antd";
 import ChatBox from "../../components/ChatBox/ChatBox";
 import "./style.css";
 import Canvas from "../../components/Canvas";
+import UserList from "../../components/UserList/UserList";
 
 
 export default function Room() {
@@ -10,7 +11,9 @@ export default function Room() {
     <>
       <div className="wrapper">
         <div className="game-container">
-          <div className="user-list-container">user list (score)</div>
+          <div className="user-list-container">
+            <UserList />
+          </div>
           <div className="canvas-container">
             <Canvas />
           </div>
