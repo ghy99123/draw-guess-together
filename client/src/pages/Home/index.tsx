@@ -9,9 +9,6 @@ export default function Home() {
   const formRef = useRef(null);
   const { state, dispatch } = useContext(AppContext);
   const { socket, uid, room, userName } = state;
-  const roomId = room?.roomId;
-
-  console.log("first", state);
 
   const enterRoom = (player: Player) => {
     // TODO: currently roomId is 1745
@@ -31,8 +28,7 @@ export default function Home() {
     }
     if (uid === null) {
       socket.emit("createUser", userName);
-    }
-    if (roomId) {
+    } else {
       enterRoom({ userName, uid });
     }
   };

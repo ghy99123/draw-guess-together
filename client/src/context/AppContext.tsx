@@ -11,7 +11,6 @@ interface IAppState {
   uid: string | null;
   onlineCount: number;
   room: Room | null;
- 
 }
 
 // export type IAction = {
@@ -24,7 +23,7 @@ const initialState: IAppState = {
   userName: "",
   uid: null,
   onlineCount: 0,
-  room: null
+  room: null,
 };
 
 export interface IAppContext {
@@ -36,10 +35,10 @@ const reducer = (state: IAppState, action: IAction): typeof initialState => {
   const { type, payload } = action;
   switch (type) {
     case "update_info":
-      console.log("reducer", state, payload)
+      console.log("reducer", state, payload);
       return { ...state, ...payload };
     case "update_room":
-      return { ...state, room: payload};
+      return { ...state, room: payload };
     default:
       throw new Error();
   }

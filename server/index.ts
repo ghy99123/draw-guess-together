@@ -7,7 +7,7 @@ import {
 } from "../client/src/types/ISocket";
 import { generateUserId } from "./util/user";
 import { users, rooms } from "./store/gameInfo";
-import { Room } from "../client/src/types/IGameData";
+import { Player, Room } from "../client/src/types/IGameData";
 
 const app = express();
 const httpSever = http.createServer(app);
@@ -21,7 +21,6 @@ const PORT = process.env.PORT || 7000;
 
 io.on("connect", (socket) => {
   console.log("connect");
-
   // Waiting for a new user coming and assign an id for the user
   socket.on("createUser", (userName) => {
     const uid: string = generateUserId();
@@ -30,7 +29,7 @@ io.on("connect", (socket) => {
     socket.emit("getUserInfo", player);
   });
 
-  // Waiting for a user coming into a goming room and updatae the room information
+  // Waiting for a user coming into a gaming room and update the room information
   socket.on("enterRoom", async (player, roomId) => {
     await socket.join(roomId);
     const curRoom = rooms.get(roomId);
@@ -46,7 +45,20 @@ io.on("connect", (socket) => {
     }
     // const room = io.of(`/${roomId}`).adapter.rooms;
     // console.log("server", room);
-    io.in(roomId).emit("enterRoom", rooms.get(roomId) as Room)
+    io.in(roomId).emit("enterRoom", rooms.get(roomId) as Room);
+  });
+
+  // Waiting for a user leaving a goming room and update the room information
+  socket.on("leaveRoom", (uid, roomId) => {
+    // socket.leave(roomId);
+    const curRoom = rooms.get(roomId);
+    const players = curRoom?.players.filter((p: Player) => p.uid !== uid) || [];
+    // every player in the room leaves, destroy the room
+    if (!players.length) {
+      rooms.delete(roomId);
+    }
+    io.in(roomId).emit("leaveRoom", rooms.get(roomId) as Room);
+    socket.leave(roomId);
   });
 });
 
