@@ -41,7 +41,7 @@ export default function Home() {
 
     socket.on("enterRoom", (room) => {
       dispatch({ type: "update_room", payload: room });
-      navigate(`/room/${room.roomId}`);
+      navigate(`/room/${room.roomId}`, {replace: true});
     });
   }, []);
 
