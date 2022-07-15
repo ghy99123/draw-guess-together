@@ -1,8 +1,9 @@
 .chat-box-container {
   padding-top: 15px;
   position: relative;
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
+  /* overflow: auto; */
 }
 
 .chat-box-container .tooltip {
@@ -19,10 +20,11 @@
 }
 
 .chat-box-container .message-box {
-  /* border: 1px solid black; */
-  flex: 1;
+  /* flex: 1; */
+  height: 180px;
   padding: 5px 0;
   margin-bottom: 5px;
+  overflow: auto;
 }
 
 /* antd 列表样式局部修改*/

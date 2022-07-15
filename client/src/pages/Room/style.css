@@ -11,7 +11,7 @@
   height: 85%;
   display: grid;
   grid-template-columns: minmax(240px, 1fr) 800px;
-  grid-template-rows: 400px 1fr;
+  grid-template-rows: 400px minmax(230px, 1fr);
   grid-gap: 10px;
 }
 
