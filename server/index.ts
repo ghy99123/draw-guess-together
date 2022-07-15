@@ -46,6 +46,7 @@ io.on("connect", (socket) => {
     // const room = io.of(`/${roomId}`).adapter.rooms;
     // console.log("server", room);
     io.in(roomId).emit("enterRoom", rooms.get(roomId) as Room);
+    io.in(roomId).emit("message", `${player.userName}加入了房间`, "", true);
   });
 
   // Waiting for a user leaving a goming room and update the room information
@@ -59,6 +60,11 @@ io.on("connect", (socket) => {
     }
     io.in(roomId).emit("leaveRoom", rooms.get(roomId) as Room);
     socket.leave(roomId);
+  });
+
+  socket.on("message", (msg, userName, roomId) => {
+    console.log(msg);
+    io.in(roomId).emit("message", msg, userName, false);
   });
 });
 
