@@ -10,11 +10,15 @@ import { AppContext } from "../../context/AppContext";
 export default function Room() {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(AppContext);
-  const { socket, uid, userName, room } = state;
+  const { socket, player, room } = state;
+  const { uid, userName } = player;
+  const canStart = room !== null && room.players.length > 1;
+  const isAdmin = room?.admin?.uid === uid;
 
   const onLeaveRoomClick = () => {
     if (!uid || !room) return;
-    socket.emit("leaveRoom", uid, room.roomId);
+    socket.emit("leaveRoom", player, room.roomId);
+    navigate("/", { replace: true });
   };
 
   console.log("sfs");
@@ -29,8 +33,7 @@ export default function Room() {
 
   useEffect(() => {
     socket.on("leaveRoom", (room) => {
-      dispatch({ type: "update_room", payload: null });
-      navigate("/", { replace: true });
+      dispatch({ type: "update_room", payload: room });
     });
   }, []);
 
@@ -60,9 +63,11 @@ export default function Room() {
               onSend={onMsgSend}
             />
             <div className="button-area">
-              <Button type="primary" shape="round">
-                开始游戏
-              </Button>
+              {isAdmin && (
+                <Button type="primary" shape="round" disabled={!canStart}>
+                  开始游戏
+                </Button>
+              )}
               <Button shape="round" onClick={onLeaveRoomClick}>
                 离开房间
               </Button>

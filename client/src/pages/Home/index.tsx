@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext, IAppContext } from "../../context/AppContext";
+import { AppContext } from "../../context/AppContext";
 import { Player } from "../../types/IGameData";
 import "./style.css";
 
@@ -8,7 +8,8 @@ export default function Home() {
   const navigate = useNavigate();
   const formRef = useRef(null);
   const { state, dispatch } = useContext(AppContext);
-  const { socket, uid, room, userName } = state;
+  const { socket, player, room } = state;
+  const {uid, userName} = player
 
   const enterRoom = (player: Player) => {
     // TODO: currently roomId is 1745

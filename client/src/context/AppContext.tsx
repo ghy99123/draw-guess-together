@@ -2,15 +2,17 @@ import React, { createContext, useReducer } from "react";
 import io, { Socket } from "socket.io-client";
 import { url } from "../constant/url";
 import { IAction } from "../types/IAction";
-import { Room } from "../types/IGameData";
+import { GameInfo, Player, Room } from "../types/IGameData";
 import { ClientToServerEvents, ServerToClientEvents } from "../types/ISocket";
 
 interface IAppState {
   socket: Socket<ServerToClientEvents, ClientToServerEvents>;
-  userName: string;
-  uid: string | null;
+  player: Player;
+  // userName: string;
+  // uid: string | null;
   onlineCount: number;
   room: Room | null;
+  gameInfo: GameInfo;
 }
 
 // export type IAction = {
@@ -20,10 +22,12 @@ interface IAppState {
 
 const initialState: IAppState = {
   socket: io(url),
-  userName: "",
-  uid: null,
+  // userName: "",
+  // uid: null,
+  player: {userName: "", uid: null},
   onlineCount: 0,
   room: null,
+  gameInfo: null,
 };
 
 export interface IAppContext {
@@ -35,8 +39,7 @@ const reducer = (state: IAppState, action: IAction): typeof initialState => {
   const { type, payload } = action;
   switch (type) {
     case "update_info":
-      console.log("reducer", state, payload);
-      return { ...state, ...payload };
+      return { ...state, player: payload };
     case "update_room":
       return { ...state, room: payload };
     default:

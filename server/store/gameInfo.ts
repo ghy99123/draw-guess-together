@@ -1,7 +1,9 @@
-import { Room } from "../../client/src/types/IGameData";
+import { GameInfo, Room } from "../../client/src/types/IGameData";
 
-type UserInfo = Map<string, string>;
-type RoomInfo = Map<string, Room>;
+type UserMap = Map<string, string>;
+type RoomMap = Map<string, Room>;
+type GameMap = Map<string, Readonly<GameInfo>>;
 
-export const users: UserInfo = new Map();
-export const rooms: RoomInfo = new Map();
+export const users: UserMap = new Map();
+export const rooms: RoomMap = new Map();
+export const gameInfo: GameMap = new Map();

@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import express from "express";
 import * as http from "http";
 import {
@@ -6,8 +6,8 @@ import {
   ClientToServerEvents,
 } from "../client/src/types/ISocket";
 import { generateUserId } from "./util/user";
-import { users, rooms } from "./store/gameInfo";
-import { Player, Room } from "../client/src/types/IGameData";
+import { users, rooms, gameInfo } from "./store/gameInfo";
+import { GameInfo, Player, Room } from "../client/src/types/IGameData";
 
 const app = express();
 const httpSever = http.createServer(app);
@@ -50,21 +50,40 @@ io.on("connect", (socket) => {
   });
 
   // Waiting for a user leaving a goming room and update the room information
-  socket.on("leaveRoom", (uid, roomId) => {
+  socket.on("leaveRoom", (player, roomId) => {
     // socket.leave(roomId);
+
     const curRoom = rooms.get(roomId);
-    const players = curRoom?.players.filter((p: Player) => p.uid !== uid) || [];
+    if (!curRoom) return;
+    const players = curRoom?.players.filter((p: Player) => p.uid !== player.uid) || [];
+    rooms.set(roomId, { ...curRoom, players });
     // every player in the room leaves, destroy the room
     if (!players.length) {
       rooms.delete(roomId);
     }
     io.in(roomId).emit("leaveRoom", rooms.get(roomId) as Room);
+    io.in(roomId).emit("message", `${player.userName}离开了房间`, "", true);
     socket.leave(roomId);
   });
 
   socket.on("message", (msg, userName, roomId) => {
-    console.log(msg);
     io.in(roomId).emit("message", msg, userName, false);
+  });
+
+  // Waiting for the admin user starting the game
+  socket.on("startGame", (roomId) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+    const initialInfo: Readonly<GameInfo> = {
+      painter: room.players[0],
+      painterIndex: 0,
+      room: room,
+      round: 1,
+      totalRound: room.players.length * 5, // each player has 5 chances to paint
+      answer: "写死的答案",
+    };
+    gameInfo.set(roomId, initialInfo);
+    io.in(roomId).emit("nextPlay", initialInfo);
   });
 });
 
