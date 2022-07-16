@@ -24,7 +24,7 @@ const initialState: IAppState = {
   socket: io(url),
   // userName: "",
   // uid: null,
-  player: {userName: "", uid: null},
+  player: {userName: "", uid: null, score: 0},
   onlineCount: 0,
   room: null,
   gameInfo: null,
@@ -42,6 +42,8 @@ const reducer = (state: IAppState, action: IAction): typeof initialState => {
       return { ...state, player: payload };
     case "update_room":
       return { ...state, room: payload };
+    case "update_game_info":
+      return {...state, gameInfo: payload};
     default:
       throw new Error();
   }

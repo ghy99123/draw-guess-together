@@ -1,4 +1,4 @@
-import { Player, Room } from "./IGameData";
+import { GameInfo, Player, Room } from "./IGameData";
 
 export type IAction =
   | {
@@ -8,4 +8,8 @@ export type IAction =
   | {
       type: "update_room";
       payload: Room | null;
+    }
+  | {
+      type: "update_game_info";
+      payload: GameInfo;
     };

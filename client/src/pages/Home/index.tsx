@@ -30,7 +30,7 @@ export default function Home() {
     if (uid === null) {
       socket.emit("createUser", userName);
     } else {
-      enterRoom({ userName, uid });
+      enterRoom(player);
     }
   };
 

@@ -6,4 +6,4 @@ type GameMap = Map<string, Readonly<GameInfo>>;
 
 export const users: UserMap = new Map();
 export const rooms: RoomMap = new Map();
-export const gameInfo: GameMap = new Map();
+export const gameInfos: GameMap = new Map();

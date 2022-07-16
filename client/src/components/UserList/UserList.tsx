@@ -1,27 +1,22 @@
 import React from "react";
 import { List } from "antd";
+import { Player } from "../../types/IGameData";
 
-const list = [
-  {id: 1, name: "玩家1", score: 10},
-  {id: 2, name: "玩家2", score: 8},
-  {id: 3, name: "玩家3", score: 6},
-  {id: 4, name: "玩家3", score: 6},
-  {id: 5, name: "玩家3", score: 6},
-  {id: 6, name: "玩家3", score: 6},
-  {id: 7, name: "玩家3", score: 6},
-  {id: 8, name: "玩家3", score: 6},
-]
+interface Props {
+  players?: Player[];
+}
 
-export default function UserList() {
+const UserList: React.FC<Props> = (props: Props) => {
+  const { players } = props;
   return (
     <>
-      <List 
-        dataSource={list}
-        renderItem={(item: any) => (
-          <List.Item key={item.id}>
-            <List.Item.Meta 
-              title={item.name}
-              description={'得分：' + item.score}
+      <List
+        dataSource={players}
+        renderItem={(item: Player) => (
+          <List.Item key={item.uid}>
+            <List.Item.Meta
+              title={item.userName}
+              description={"得分：" + item.score}
             />
             <div>状态</div>
           </List.Item>
@@ -29,4 +24,6 @@ export default function UserList() {
       />
     </>
   );
-}
+};
+
+export default UserList;

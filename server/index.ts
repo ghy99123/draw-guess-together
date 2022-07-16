@@ -6,7 +6,7 @@ import {
   ClientToServerEvents,
 } from "../client/src/types/ISocket";
 import { generateUserId } from "./util/user";
-import { users, rooms, gameInfo } from "./store/gameInfo";
+import { users, rooms, gameInfos } from "./store/gameInfo";
 import { GameInfo, Player, Room } from "../client/src/types/IGameData";
 
 const app = express();
@@ -25,7 +25,7 @@ io.on("connect", (socket) => {
   socket.on("createUser", (userName) => {
     const uid: string = generateUserId();
     users.set(uid, userName);
-    const player = { userName, uid };
+    const player = { userName, uid, score: 0 };
     socket.emit("getUserInfo", player);
   });
 
@@ -46,7 +46,7 @@ io.on("connect", (socket) => {
     // const room = io.of(`/${roomId}`).adapter.rooms;
     // console.log("server", room);
     io.in(roomId).emit("enterRoom", rooms.get(roomId) as Room);
-    io.in(roomId).emit("message", `${player.userName}加入了房间`, "", true);
+    io.in(roomId).emit("message", `${player.userName}加入了房间`, "", true, 1);
   });
 
   // Waiting for a user leaving a goming room and update the room information
@@ -62,13 +62,22 @@ io.on("connect", (socket) => {
       rooms.delete(roomId);
     }
     io.in(roomId).emit("leaveRoom", rooms.get(roomId) as Room);
-    io.in(roomId).emit("message", `${player.userName}离开了房间`, "", true);
+    io.in(roomId).emit("message", `${player.userName}离开了房间`, "", true, 1);
     socket.leave(roomId);
   });
 
   socket.on("message", (msg, userName, roomId) => {
-    io.in(roomId).emit("message", msg, userName, false);
+    io.in(roomId).emit("message", msg, userName, false, 1);
   });
+
+  socket.on("guess", (guessWord, player, roomId) => {
+    const gameInfo = gameInfos.get(roomId) as GameInfo
+    if (guessWord === gameInfo?.answer) {
+      io.in(roomId).emit("message", `${player.userName}猜对了答案`, "", true, 0);
+    }else {
+      io.in(roomId).emit("message", guessWord, player.userName, false, 0);
+    }
+  })
 
   // Waiting for the admin user starting the game
   socket.on("startGame", (roomId) => {
@@ -82,7 +91,7 @@ io.on("connect", (socket) => {
       totalRound: room.players.length * 5, // each player has 5 chances to paint
       answer: "写死的答案",
     };
-    gameInfo.set(roomId, initialInfo);
+    gameInfos.set(roomId, initialInfo);
     io.in(roomId).emit("nextPlay", initialInfo);
   });
 });

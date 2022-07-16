@@ -1,6 +1,7 @@
 export type Player = {
   userName: string;
   uid: string | null;
+  score: number;
 };
 
 export type Room = {

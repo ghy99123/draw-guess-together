@@ -40,11 +40,13 @@ const ChatBox: React.FC<Props> = (props: Props) => {
       });
     }
 
-    socket.on("message", (msg, userName, isSystemMsg) => {
+    socket.on("message", (msg, userName, isSystemMsg, msgType) => {
       const newMsg = isSystemMsg ? msg : `${userName}: ${msg}`;
       const color = isSystemMsg ? "green" : "#4f251a";
       const msgItem = { msg: newMsg, color };
-      setChatList((preList) => [...preList, msgItem]);
+      msgType === 1
+        ? setChatList((preList) => [...preList, msgItem])
+        : setGuessList((preList) => [...preList, msgItem]);
     });
   }, []);
 
