@@ -8,11 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { GameInfo } from "../../types/IGameData";
 import { Message } from "../../types/gameType";
+import NoteBoard from "../../components/NoteBoard";
 
 export default function Room() {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(AppContext);
-  const { socket, player, room, gameInfo } = state;
+  const { socket, player, room } = state;
   const { uid, userName } = player;
   const canStart = room !== null && room.players.length > 1;
   const isAdmin = room?.admin?.uid === uid;
@@ -47,7 +48,6 @@ export default function Room() {
   const onStartClick = () => {
     if (!room) return;
     socket.emit("startGame", room.roomId);
-    setStart(true);
   };
 
   useEffect(() => {
@@ -56,6 +56,11 @@ export default function Room() {
     });
     socket.on("nextPlay", (gameInfo: GameInfo) => {
       dispatch({ type: "update_game_info", payload: gameInfo });
+      if (gameInfo === null || gameInfo.status === "WAITING") {
+        setStart(false);
+      } else if (gameInfo.status === "ROUND_START") {
+        setStart(true);
+      }
     });
 
     socket.on("message", (msg, userName, isSystemMsg, msgType) => {
@@ -76,7 +81,7 @@ export default function Room() {
             <UserList players={room?.players} />
           </div>
           <div className="canvas-container">
-            <Canvas />
+            {start ? <Canvas /> : <NoteBoard />}
           </div>
           <div className="input-area">
             <ChatBox

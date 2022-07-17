@@ -86,13 +86,16 @@ io.on("connect", (socket) => {
     const initialInfo: Readonly<GameInfo> = {
       painter: room.players[0],
       painterIndex: 0,
-      room: room,
       round: 1,
       totalRound: room.players.length * 5, // each player has 5 chances to paint
       answer: "写死的答案",
+      status: "ROUND_BEFORE",
     };
     gameInfos.set(roomId, initialInfo);
     io.in(roomId).emit("nextPlay", initialInfo);
+    setTimeout(() => {
+      io.in(roomId).emit("nextPlay", {...initialInfo, status: "ROUND_START"});
+    }, 5000)
   });
 });
 

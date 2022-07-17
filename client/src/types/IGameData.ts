@@ -1,3 +1,5 @@
+import { GameStatus } from "./gameType";
+
 export type Player = {
   userName: string;
   uid: string | null;
@@ -13,8 +15,8 @@ export type Room = {
 export type GameInfo = {
   painter: Player;
   painterIndex: number;
-  room: Room;
   round: number;
   totalRound: number;
   answer: string;
-} | null;
+  status: keyof typeof GameStatus;
+};
