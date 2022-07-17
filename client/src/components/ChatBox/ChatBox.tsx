@@ -1,35 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input, InputRef, List } from "antd";
 import "./style.css";
-import { Socket } from "socket.io-client";
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from "../../types/ISocket";
+import { Message } from "../../types/gameType";
 
 interface Props {
-  isGuess: boolean;
   tooltip: string;
   placeholder: string;
-  socket: Socket<ServerToClientEvents, ClientToServerEvents>;
+  msgList: Message[];
   onSend?: (e: any) => void;
 }
 
-type Message = {
-  msg: string;
-  color: string;
-};
-
 const ChatBox: React.FC<Props> = (props: Props) => {
-  const { tooltip, placeholder, socket, onSend, isGuess } = props;
+  const { tooltip, placeholder, msgList, onSend } = props;
 
   const msgEl = useRef<HTMLDivElement>(null);
-  const [inputValue, setInputValue] = useState<string>("");
-  const [chatList, setChatList] = useState<Message[]>([]);
-  const [guessList, setGuessList] = useState<Message[]>([]);
   const inputRef = useRef<InputRef>(null);
-
-  console.log("set");
+  const [inputValue, setInputValue] = useState<string>("");
 
   useEffect(() => {
     if (msgEl.current) {
@@ -39,15 +25,6 @@ const ChatBox: React.FC<Props> = (props: Props) => {
         target.scroll({ top: target.scrollHeight, behavior: "smooth" });
       });
     }
-
-    socket.on("message", (msg, userName, isSystemMsg, msgType) => {
-      const newMsg = isSystemMsg ? msg : `${userName}: ${msg}`;
-      const color = isSystemMsg ? "green" : "#4f251a";
-      const msgItem = { msg: newMsg, color };
-      msgType === 1
-        ? setChatList((preList) => [...preList, msgItem])
-        : setGuessList((preList) => [...preList, msgItem]);
-    });
   }, []);
 
   const onPressEnter = (e: any) => {
@@ -62,7 +39,7 @@ const ChatBox: React.FC<Props> = (props: Props) => {
       <div className="tooltip">{tooltip}</div>
       <div className="message-box" ref={msgEl}>
         <List
-          dataSource={isGuess ? guessList : chatList}
+          dataSource={msgList}
           split={false}
           size="small"
           renderItem={(item, index) => (

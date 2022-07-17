@@ -7,6 +7,7 @@ import UserList from "../../components/UserList/UserList";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import { GameInfo } from "../../types/IGameData";
+import { Message } from "../../types/gameType";
 
 export default function Room() {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function Room() {
   const isAdmin = room?.admin?.uid === uid;
 
   const [start, setStart] = useState<boolean>(false);
+  const [chatList, setChatList] = useState<Message[]>([]);
+  const [guessList, setGuessList] = useState<Message[]>([]);
 
   const onLeaveRoomClick = () => {
     if (!uid || !room) return;
@@ -39,7 +42,7 @@ export default function Room() {
     const msg: string = e.target.value.trim();
     if (msg === "") return;
     socket.emit("guess", msg, player, room.roomId);
-  }
+  };
 
   const onStartClick = () => {
     if (!room) return;
@@ -53,6 +56,15 @@ export default function Room() {
     });
     socket.on("nextPlay", (gameInfo: GameInfo) => {
       dispatch({ type: "update_game_info", payload: gameInfo });
+    });
+
+    socket.on("message", (msg, userName, isSystemMsg, msgType) => {
+      const newMsg = isSystemMsg ? msg : `${userName}: ${msg}`;
+      const color = isSystemMsg ? "green" : "#4f251a";
+      const msgItem = { msg: newMsg, color };
+      msgType === 1
+        ? setChatList((preList) => [...preList, msgItem])
+        : setGuessList((preList) => [...preList, msgItem]);
     });
   }, []);
 
@@ -68,18 +80,16 @@ export default function Room() {
           </div>
           <div className="input-area">
             <ChatBox
-              isGuess={true}
               tooltip="答案"
               placeholder="请输入答案~"
-              socket={socket}
+              msgList={guessList}
               onSend={onGuessSend}
             />
             <div className="divider"></div>
             <ChatBox
-              isGuess={false}
               tooltip="聊天"
               placeholder="与朋友聊天～"
-              socket={socket}
+              msgList={chatList}
               onSend={onMsgSend}
             />
             <div className="button-area">
