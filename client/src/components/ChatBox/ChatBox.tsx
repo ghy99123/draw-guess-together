@@ -7,11 +7,18 @@ interface Props {
   tooltip: string;
   placeholder: string;
   msgList: Message[];
+  inputDisabled?: boolean;
   onSend?: (e: any) => void;
 }
 
 const ChatBox: React.FC<Props> = (props: Props) => {
-  const { tooltip, placeholder, msgList, onSend } = props;
+  const {
+    tooltip,
+    placeholder,
+    msgList,
+    inputDisabled = false,
+    onSend,
+  } = props;
 
   const msgEl = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputRef>(null);
@@ -50,6 +57,7 @@ const ChatBox: React.FC<Props> = (props: Props) => {
         />
       </div>
       <Input
+        disabled={inputDisabled}
         placeholder={placeholder}
         onPressEnter={onPressEnter}
         ref={inputRef}

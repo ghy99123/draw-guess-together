@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "antd";
 import ChatBox from "../../components/ChatBox/ChatBox";
 import "./style.css";
@@ -13,10 +13,11 @@ import NoteBoard from "../../components/NoteBoard";
 export default function Room() {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(AppContext);
-  const { socket, player, room } = state;
+  const { socket, player, room, gameInfo } = state;
   const { uid, userName } = player;
   const canStart = room !== null && room.players.length > 1;
   const isAdmin = room?.admin?.uid === uid;
+  const isPainter = gameInfo.painter.uid === player.uid;
 
   const [start, setStart] = useState<boolean>(false);
   const [chatList, setChatList] = useState<Message[]>([]);
@@ -28,22 +29,19 @@ export default function Room() {
     navigate("/", { replace: true });
   };
 
-  console.log("sfs");
-
-  const onMsgSend = (e: any) => {
-    // socket.emit("message", )
+  const onMsgSend = useCallback((e: any) => {
     if (!room) return;
     const msg: string = e.target.value;
     if (msg.trim() === "") return;
     socket.emit("message", msg, userName, room.roomId);
-  };
+  }, []);
 
-  const onGuessSend = (e: any) => {
+  const onGuessSend = useCallback((e: any) => {
     if (!room) return;
     const msg: string = e.target.value.trim();
     if (msg === "") return;
     socket.emit("guess", msg, player, room.roomId);
-  };
+  }, []);
 
   const onStartClick = () => {
     if (!room) return;
@@ -89,6 +87,10 @@ export default function Room() {
               placeholder="请输入答案~"
               msgList={guessList}
               onSend={onGuessSend}
+              inputDisabled={
+                gameInfo.status !== "ROUND_START" ||
+                (gameInfo.status === "ROUND_START" && isPainter)
+              }
             />
             <div className="divider"></div>
             <ChatBox
