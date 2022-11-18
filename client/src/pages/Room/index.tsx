@@ -53,12 +53,20 @@ export default function Room() {
       dispatch({ type: "update_room", payload: room });
     });
     socket.on("nextPlay", (gameInfo: GameInfo) => {
+      console.log(gameInfo)
       dispatch({ type: "update_game_info", payload: gameInfo });
-      if (gameInfo === null || gameInfo.status === "WAITING") {
-        setStart(false);
-      } else if (gameInfo.status === "ROUND_START") {
+      if (gameInfo.status === "ROUND_START") {
         setStart(true);
+      }else {
+        setStart(false);
       }
+      // if (gameInfo === null || gameInfo.status === "WAITING") {
+      //   setStart(false);
+      // } else if (gameInfo.status === "ROUND_START") {
+      //   setStart(true);
+      // } else if (gameInfo.status === "ROUND_END") {
+      //   setStart(false);
+      // }
     });
 
     socket.on("message", (msg, userName, isSystemMsg, msgType) => {
@@ -79,7 +87,15 @@ export default function Room() {
             <UserList players={room?.players} />
           </div>
           <div className="canvas-container">
-            {start ? <Canvas /> : <NoteBoard />}
+            {start ? (
+              <Canvas
+                socket={socket}
+                roomId={room?.roomId as string}
+                isPainter={isPainter}
+              />
+            ) : (
+              <NoteBoard />
+            )}
           </div>
           <div className="input-area">
             <ChatBox

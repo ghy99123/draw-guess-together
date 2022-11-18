@@ -1,3 +1,4 @@
+import { Coordinate } from "./gameType";
 import { GameInfo, Player, Room } from "./IGameData";
 
 export interface ServerToClientEvents {
@@ -13,6 +14,12 @@ export interface ServerToClientEvents {
     msgType: 0 | 1
   ) => void;
   nextPlay: (gameInfo: GameInfo) => void;
+  draw: (
+    mousePos: Coordinate,
+    newMousePos: Coordinate,
+    color: CanvasFillStrokeStyles["strokeStyle"],
+    lineWidth: number
+  ) => void;
 }
 
 export interface ClientToServerEvents {
@@ -22,6 +29,13 @@ export interface ClientToServerEvents {
   message: (msg: string, userName: string, roomId: string) => void;
   guess: (guessWord: string, player: Player, roomId: string) => void;
   startGame: (roomId: string) => void;
+  draw: (
+    mousePos: Coordinate,
+    newMousePos: Coordinate,
+    color: CanvasFillStrokeStyles["strokeStyle"],
+    lineWidth: number,
+    roomId: string,
+  ) => void;
 }
 
 export interface InterServerEvents {}

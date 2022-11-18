@@ -29,6 +29,9 @@ const NoteBoard: React.FC<Props> = (props: Props) => {
       case "ROUND_END":
         text = `本轮答案: ${gameInfo.answer}`;
         break;
+      case "GAME_END":
+        text = `游戏结束`;
+        break;
       default:
         text = "";
         break;

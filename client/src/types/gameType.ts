@@ -10,3 +10,8 @@ export enum GameStatus {
   ROUND_END,
   GAME_END,
 }
+
+export type Coordinate = {
+  x: number;
+  y: number;
+};

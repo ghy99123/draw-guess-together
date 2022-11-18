@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
+import { Coordinate } from "../types/gameType";
+import { ClientToServerEvents, ServerToClientEvents } from "../types/ISocket";
 
-type Coordinate = {
-  x: number;
-  y: number;
-};
 
 const useCanvasDraw = (
   ref: React.RefObject<HTMLCanvasElement>,
-  socket: Socket
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  roomId: string,
+  drawRemote: () => void,
 ) => {
   const [isPainting, setIsPainting] = useState(false);
   const [mousePos, setMousePos] = useState<Coordinate | undefined>(undefined);
@@ -51,12 +51,12 @@ const useCanvasDraw = (
     }
   };
 
-  if (socket) {
-    socket.on("draw", (mousePos, newMousePos, color, lineWidth) => {
-      console.log("receive");
-      drawLocal(mousePos, newMousePos, color, lineWidth);
-    });
-  }
+  // if (socket) {
+  //   socket.on("draw", (mousePos, newMousePos, color, lineWidth) => {
+  //     console.log("receive");
+  //     drawLocal(mousePos, newMousePos, color, lineWidth);
+  //   });
+  // }
 
   const drawLine = (
     mousePos: Coordinate,
@@ -65,10 +65,12 @@ const useCanvasDraw = (
     lineWidth: number
   ) => {
     drawLocal(mousePos, newMousePos, color, lineWidth);
-    if (socket) {
-      console.log("send");
-      socket.emit("draw", mousePos, newMousePos, color, lineWidth);
-    }
+    if (typeof drawRemote === "function")
+      drawRemote();
+    // if (socket) {
+    //   console.log("send");
+    //   socket.emit("draw", mousePos, newMousePos, color, lineWidth, roomId);
+    // }
   };
 
   const startPaint = useCallback((event: MouseEvent) => {
@@ -130,7 +132,7 @@ const useCanvasDraw = (
     };
   }, [cancelPaint, ref]);
 
-  return [setColor, setLineWidth];
+  return [setColor, setLineWidth, drawLocal];
 };
 
 export default useCanvasDraw;
