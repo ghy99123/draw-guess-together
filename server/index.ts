@@ -7,7 +7,7 @@ import {
 } from "../client/src/types/ISocket";
 import { generateUserId } from "./util/user";
 import { users, rooms, gameInfos } from "./store/gameInfo";
-import { GameInfo, Player, Room } from "../client/src/types/IGameData";
+import { GameInfo, Player, Room, Score } from "../client/src/types/IGameData";
 
 const app = express();
 const httpSever = http.createServer(app);
@@ -74,6 +74,26 @@ io.on("connect", (socket) => {
   socket.on("guess", (guessWord, player, roomId) => {
     const gameInfo = gameInfos.get(roomId) as GameInfo;
     if (guessWord === gameInfo?.answer) {
+      const uid = player.uid as string;
+      const curScores = gameInfo.scores;
+      const correctGuess = gameInfo.correctGuess;
+      const room = rooms.get(roomId) as Room;
+      const totalPlayers = room.players.length;
+      const score = totalPlayers - correctGuess + curScores[uid].score;
+      // player.score = player.score + score;
+      const scores: Record<string, Score> = {
+        ...curScores,
+        [uid]: {player, score}
+      }
+
+      const curGameInfo: GameInfo = {
+        ...gameInfo,
+        correctGuess: correctGuess + 1,
+        scores,
+      };
+
+      gameInfos.set(roomId, curGameInfo);
+
       io.in(roomId).emit(
         "message",
         `${player.userName}猜对了答案`,
@@ -81,6 +101,8 @@ io.on("connect", (socket) => {
         true,
         0
       );
+
+      io.in(roomId).emit("updateScore", curGameInfo);
     } else {
       io.in(roomId).emit("message", guessWord, player.userName, false, 0);
     }
@@ -93,10 +115,35 @@ io.on("connect", (socket) => {
     const RESULT_TIME = 5000;
     const TOTAL_TIME = READ_TIME + DRAW_TIME + RESULT_TIME;
 
-    console.log("first")
+    const startOneRound = (gameInfo: Readonly<GameInfo>) => {
+      console.log('score', gameInfo.scores)
+      gameInfos.set(roomId, gameInfo);
+      io.in(roomId).emit("nextPlay", gameInfo);
+      setTimeout(() => {
+        const curInfo: Readonly<GameInfo> = {
+          ...gameInfo,
+          status: "ROUND_START",
+        };
+        gameInfos.set(roomId, curInfo);
+        io.in(roomId).emit("nextPlay", curInfo);
+      }, READ_TIME);
+      setTimeout(() => {
+        const gameInfo = gameInfos.get(roomId) as GameInfo;
+        const curInfo: Readonly<GameInfo> = {
+          ...gameInfo,
+          status: "ROUND_END",
+        };
+        gameInfos.set(roomId, curInfo);
+        io.in(roomId).emit("nextPlay", curInfo);
+      }, READ_TIME + DRAW_TIME);
+    };
 
     const room = rooms.get(roomId);
     if (!room) return;
+
+    const initScores: Record<string, Score> = Object.fromEntries(
+      room.players.map((player) => [player.uid, { player, score: 0 }])
+    );
     const initialInfo: Readonly<GameInfo> = {
       painter: room.players[0],
       painterIndex: 0,
@@ -104,34 +151,25 @@ io.on("connect", (socket) => {
       totalRound: room.players.length * 5, // each player has 5 chances to paint
       answer: "写死的答案",
       status: "ROUND_BEFORE",
+      correctGuess: 0,
+      scores: initScores,
     };
-    gameInfos.set(roomId, initialInfo);
 
-    io.in(roomId).emit("nextPlay", initialInfo);
-      setTimeout(() => {
-        io.in(roomId).emit("nextPlay", { ...initialInfo, status: "ROUND_START" });
-      }, READ_TIME);
-      setTimeout(() => {
-        io.in(roomId).emit("nextPlay", { ...initialInfo, status: "ROUND_END" });
-      }, READ_TIME + DRAW_TIME);
+    startOneRound(initialInfo);
 
     let i = 1;
     let timer = setInterval(() => {
-      const curInfo = {
-        ...initialInfo,
+      const curGameInfo = gameInfos.get(roomId) as GameInfo;
+      const curInfo: Readonly<GameInfo> = {
+        ...curGameInfo,
         painter: room.players[i % room.players.length],
         painterIndex: i % room.players.length,
         round: i + 1,
         answer: "写死的答案" + i,
+        correctGuess: 0,
+        status: "ROUND_BEFORE",
       };
-      io.in(roomId).emit("nextPlay", { ...curInfo, status: "ROUND_BEFORE" });
-      setTimeout(() => {
-        io.in(roomId).emit("nextPlay", { ...curInfo, status: "ROUND_START" });
-      }, READ_TIME);
-      setTimeout(() => {
-        io.in(roomId).emit("nextPlay", { ...curInfo, status: "ROUND_END" });
-      }, READ_TIME + DRAW_TIME);
-
+      startOneRound(curInfo);
       // Game ends
       if (curInfo.round === curInfo.totalRound) {
         clearInterval(timer);
@@ -139,7 +177,6 @@ io.on("connect", (socket) => {
       }
       i++;
     }, TOTAL_TIME);
-
   });
 
   // Waiting for the painter drawing on the canvas

@@ -3,7 +3,6 @@ import { GameStatus } from "./gameType";
 export type Player = {
   userName: string;
   uid: string | null;
-  score: number;
 };
 
 export type Room = {
@@ -12,6 +11,11 @@ export type Room = {
   admin: Player;
 };
 
+export type Score = {
+  player: Player,
+  score: number,
+}
+
 export type GameInfo = {
   painter: Player;
   painterIndex: number;
@@ -19,4 +23,6 @@ export type GameInfo = {
   totalRound: number;
   answer: string;
   status: keyof typeof GameStatus;
+  correctGuess: number;
+  scores: Record<string, Score>
 };

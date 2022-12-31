@@ -8,7 +8,6 @@ import { ClientToServerEvents, ServerToClientEvents } from "../types/ISocket";
 interface IAppState {
   socket: Socket<ServerToClientEvents, ClientToServerEvents>;
   player: Player;
-  onlineCount: number;
   room: Room | null;
   gameInfo: GameInfo;
 }
@@ -20,16 +19,17 @@ interface IAppState {
 
 const initialState: IAppState = {
   socket: io(url),
-  player: {userName: "", uid: null, score: 0},
-  onlineCount: 0,
+  player: {userName: "", uid: null},
   room: null,
   gameInfo: {
-    painter: {userName: "", uid: null, score: 0},
+    painter: {userName: "", uid: null},
     painterIndex: 0,
     round: -1,
     totalRound: 0, // each player has 5 chances to paint
     answer: "",
     status: "WAITING",
+    correctGuess: 0,
+    scores: {},
   },
 };
 

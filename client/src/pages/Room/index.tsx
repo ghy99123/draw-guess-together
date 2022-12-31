@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "antd";
 import ChatBox from "../../components/ChatBox/ChatBox";
 import "./style.css";
@@ -14,6 +14,7 @@ export default function Room() {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(AppContext);
   const { socket, player, room, gameInfo } = state;
+  console.log(state);
   const { uid, userName } = player;
   const canStart = room !== null && room.players.length > 1;
   const isAdmin = room?.admin?.uid === uid;
@@ -53,11 +54,11 @@ export default function Room() {
       dispatch({ type: "update_room", payload: room });
     });
     socket.on("nextPlay", (gameInfo: GameInfo) => {
-      console.log(gameInfo)
+      // console.log(gameInfo);
       dispatch({ type: "update_game_info", payload: gameInfo });
       if (gameInfo.status === "ROUND_START") {
         setStart(true);
-      }else {
+      } else {
         setStart(false);
       }
       // if (gameInfo === null || gameInfo.status === "WAITING") {
@@ -77,6 +78,10 @@ export default function Room() {
         ? setChatList((preList) => [...preList, msgItem])
         : setGuessList((preList) => [...preList, msgItem]);
     });
+
+    socket.on("updateScore", (gameInfo) => {
+      dispatch({ type: "update_game_info", payload: gameInfo });
+    });
   }, []);
 
   return (
@@ -84,7 +89,10 @@ export default function Room() {
       <div className="wrapper">
         <div className="game-container">
           <div className="user-list-container">
-            <UserList players={room?.players} />
+            <UserList
+              scores={Object.values(gameInfo.scores)}
+              players={room?.players}
+            />
           </div>
           <div className="canvas-container">
             {start ? (

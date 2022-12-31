@@ -20,6 +20,7 @@ export interface ServerToClientEvents {
     color: CanvasFillStrokeStyles["strokeStyle"],
     lineWidth: number
   ) => void;
+  updateScore: (gameInfo: GameInfo) => void;
 }
 
 export interface ClientToServerEvents {
