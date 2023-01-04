@@ -6,8 +6,10 @@ import {
   ClientToServerEvents,
 } from "../client/src/types/ISocket";
 import { generateUserId } from "./util/user";
+import RandomizedSet from "./util/RandomizedSet";
 import { users, rooms, gameInfos } from "./store/gameInfo";
 import { GameInfo, Player, Room, Score } from "../client/src/types/IGameData";
+import gameWords from "./store/gameWords";
 
 const app = express();
 const httpSever = http.createServer(app);
@@ -110,10 +112,13 @@ io.on("connect", (socket) => {
 
   // Waiting for the admin user starting the game
   socket.on("startGame", (roomId) => {
+    type Keyword = [string, string]
     const READ_TIME = 5000;
     const DRAW_TIME = 60000;
     const RESULT_TIME = 5000;
     const TOTAL_TIME = READ_TIME + DRAW_TIME + RESULT_TIME;
+ 
+    const wordSet = new RandomizedSet<Keyword>(gameWords as Keyword[]);
 
     const startOneRound = (gameInfo: Readonly<GameInfo>) => {
       console.log('score', gameInfo.scores)
@@ -149,7 +154,7 @@ io.on("connect", (socket) => {
       painterIndex: 0,
       round: 1,
       totalRound: room.players.length * 5, // each player has 5 chances to paint
-      answer: "写死的答案",
+      answer: wordSet.getRandom()[0],
       status: "ROUND_BEFORE",
       correctGuess: 0,
       scores: initScores,
@@ -165,7 +170,7 @@ io.on("connect", (socket) => {
         painter: room.players[i % room.players.length],
         painterIndex: i % room.players.length,
         round: i + 1,
-        answer: "写死的答案" + i,
+        answer: wordSet.getRandom()[0],
         correctGuess: 0,
         status: "ROUND_BEFORE",
       };
