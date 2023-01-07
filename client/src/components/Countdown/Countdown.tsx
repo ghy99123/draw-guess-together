@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useCountDown from "../../hooks/useCountDown";
+import { useCountDown } from "@/hooks";
 import "./style.css";
 
 export default function Countdown() {

@@ -2,8 +2,9 @@
   "name": "draw-guess-together",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  
   "dependencies": {
+    "@craco/craco": "^7.0.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -25,10 +26,10 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject",
     "serve:server": "nodemon --watch './**/*.ts' -exec 'ts-node' -e server/server.ts"
   },
   "eslintConfig": {
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "ts-node": "^10.8.2",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths-webpack-plugin": "^4.0.0"
   }
 }

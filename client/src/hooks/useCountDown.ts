@@ -1,14 +1,14 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 /**
  * @param duration total duration in second
  * @param onFinish callback funciton when the count down finishes
  * @returns a function to start the count down and a stateful value of remaining time in second
  */
-const useCountDown = (
+export default function useCountDown(
   duration: number,
   onFinish?: () => void
-): [() => void, number] => {
+): [() => void, number] {
   const milliDuration = duration * 1000;
   const startRef = useRef<number>();
   const requestRef = useRef<number>();
@@ -35,6 +35,6 @@ const useCountDown = (
   };
 
   return [start, remain / 1000];
-};
+}
 
-export default useCountDown;
+// export default useCountDown;

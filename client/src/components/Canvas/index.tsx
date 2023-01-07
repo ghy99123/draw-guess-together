@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import useCanvasDraw from "../../hooks/useCanvasDraw";
-import { Coordinate } from "../../types/gameType";
+import useCanvasDraw from "@/hooks/useCanvasDraw";
+import { Coordinate } from "@/types/gameType";
 import {
   ClientToServerEvents,
   ServerToClientEvents,
-} from "../../types/ISocket";
-import Countdown from "../Countdown/Countdown";
+} from "@/types/ISocket";
+import { Countdown } from "@/components";
 import "./style.css";
 
 interface Props {

@@ -4,12 +4,12 @@ import { Coordinate } from "../types/gameType";
 import { ClientToServerEvents, ServerToClientEvents } from "../types/ISocket";
 
 
-const useCanvasDraw = (
+export default function useCanvasDraw (
   ref: React.RefObject<HTMLCanvasElement>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
   roomId: string,
   drawRemote: () => void,
-) => {
+) {
   const [isPainting, setIsPainting] = useState(false);
   const [mousePos, setMousePos] = useState<Coordinate | undefined>(undefined);
   const [color, setColor] = useState("black");
@@ -135,4 +135,3 @@ const useCanvasDraw = (
   return [setColor, setLineWidth, drawLocal];
 };
 
-export default useCanvasDraw;

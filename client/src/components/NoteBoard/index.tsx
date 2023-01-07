@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "@/context/AppContext";
 import "./style.css";
 
 interface Props {}

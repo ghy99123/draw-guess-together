@@ -1,6 +1,6 @@
 import React from "react";
 import { List } from "antd";
-import { Player, Score } from "../../types/IGameData";
+import { Player, Score } from "@/types/IGameData";
 
 interface Props {
   players?: Player[];

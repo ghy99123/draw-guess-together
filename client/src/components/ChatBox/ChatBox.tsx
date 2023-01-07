@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input, InputRef, List } from "antd";
 import "./style.css";
-import { Message } from "../../types/gameType";
+import { Message } from "@/types/gameType";
 
 interface Props {
   tooltip: string;
